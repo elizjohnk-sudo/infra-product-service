@@ -1,0 +1,22 @@
+# Kubernetes temp files
+*.tmp
+*.swp
+*~
+
+# Secrets (never commit!)
+*secret*.yaml.local
+*.env
+.env.local
+
+# IDE
+.idea/
+.vscode/
+*.iml
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Backup files
+*.bak
+*.backup
