@@ -18,8 +18,8 @@ spec:
     spec:
       containers:
       - name: product-service
-        image: product-service:1.0.0
-        imagePullPolicy: Never
+        image: elizjohn/product-service:latest
+        imagePullPolicy: Always
         ports:
         - containerPort: 8082
           name: http

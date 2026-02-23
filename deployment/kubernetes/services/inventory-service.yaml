@@ -18,8 +18,8 @@ spec:
     spec:
       containers:
       - name: inventory-service
-        image: inventory-service:1.0.0
-        imagePullPolicy: Never
+        image: elizjohn/inventory-service:latest
+        imagePullPolicy: Always
         ports:
         - containerPort: 8083
           name: http

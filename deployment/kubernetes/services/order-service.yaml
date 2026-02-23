@@ -18,8 +18,8 @@ spec:
     spec:
       containers:
       - name: order-service
-        image: order-service:1.0.0
-        imagePullPolicy: Never
+        image: elizjohn/order-service:latest
+        imagePullPolicy: Always
         ports:
         - containerPort: 8081
           name: http
