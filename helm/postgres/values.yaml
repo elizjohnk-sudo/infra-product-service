@@ -1,0 +1,29 @@
+namespace: product-services-dev
+
+postgres:
+  image: postgres:15-alpine
+  replicas: 1
+
+  config:
+    database: inventorydb
+    user: postgres
+
+  secret:
+    password: postgres
+
+  storage:
+    size: 1Gi
+    storageClass: standard
+
+  resources:
+    requests:
+      memory: "256Mi"
+      cpu: "250m"
+    limits:
+      memory: "512Mi"
+      cpu: "500m"
+
+  service:
+    name: postgres-service
+    type: ClusterIP
+    port: 5432

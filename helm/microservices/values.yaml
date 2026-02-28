@@ -1,0 +1,92 @@
+namespace: product-services-dev
+
+# Global defaults for all services
+global:
+  image:
+    pullPolicy: Always
+    registry: docker.io
+    username: elizjohn  # Replace with your Docker Hub username
+
+  resources:
+    requests:
+      memory: "256Mi"
+      cpu: "250m"
+    limits:
+      memory: "512Mi"
+      cpu: "500m"
+
+# Individual service configurations
+services:
+  inventory:
+    enabled: true
+    name: inventory-service
+    replicas: 1
+    image:
+      repository: inventory-service
+      tag: latest
+    port: 8083
+
+    # ConfigMap for database and application configuration
+    configMap:
+      DB_HOST: postgres-service
+      DB_NAME: inventorydb
+      DB_USER: postgres
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres-service:5432/inventorydb
+      SPRING_JPA_HIBERNATE_DDL_AUTO: update
+      SPRING_JPA_SHOW_SQL: "true"
+      SPRING_JPA_PROPERTIES_HIBERNATE_DIALECT: org.hibernate.dialect.PostgreSQLDialect
+
+    # Secret reference for sensitive data
+    secretRef:
+      name: postgres-secret
+
+    service:
+      type: ClusterIP
+
+  product:
+    enabled: true
+    name: product-service
+    replicas: 1
+    image:
+      repository: product-service
+      tag: latest
+    port: 8082
+
+    # ConfigMap for service URLs
+    configMap:
+      INVENTORY_SERVICE_URL: http://inventory-service:8083
+
+    service:
+      type: ClusterIP
+
+  order:
+    enabled: true
+    name: order-service
+    replicas: 1
+    image:
+      repository: order-service
+      tag: latest
+    port: 8081
+
+    # ConfigMap for service URLs
+    configMap:
+      PRODUCT_SERVICE_URL: http://product-service:8082
+
+    service:
+      type: ClusterIP
+
+  apiGateway:
+    enabled: true
+    name: api-gateway
+    replicas: 1
+    image:
+      repository: api-gateway
+      tag: latest
+    port: 8080
+
+    # API Gateway doesn't need ConfigMap in this setup
+    configMap: {}
+
+    service:
+      type: NodePort
+      nodePort: 30080

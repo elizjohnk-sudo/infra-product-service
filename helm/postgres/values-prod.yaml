@@ -1,0 +1,17 @@
+# Production environment overrides
+namespace: product-services-prod
+
+postgres:
+  replicas: 2  # High availability
+
+  storage:
+    size: 10Gi
+    storageClass: fast-ssd
+
+  resources:
+    requests:
+      memory: "512Mi"
+      cpu: "500m"
+    limits:
+      memory: "2Gi"
+      cpu: "1000m"

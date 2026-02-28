@@ -1,0 +1,22 @@
+# Development environment overrides
+namespace: product-services-dev
+
+global:
+  image:
+    pullPolicy: Always
+    tag: latest  # Always use latest in dev
+
+services:
+  inventory:
+    replicas: 1
+    configMap:
+      SPRING_JPA_SHOW_SQL: "true"  # Enable SQL logging in dev
+
+  product:
+    replicas: 1
+
+  order:
+    replicas: 1
+
+  apiGateway:
+    replicas: 1

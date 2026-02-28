@@ -1,0 +1,64 @@
+{{- range $serviceName, $service := .Values.services }}
+{{- if $service.enabled }}
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ $service.name }}
+  namespace: {{ $.Values.namespace }}
+  labels:
+    app: {{ $service.name }}
+    chart: {{ $.Chart.Name }}-{{ $.Chart.Version }}
+    service: {{ $serviceName }}
+    version: {{ $service.image.tag | default $.Values.global.image.tag | quote }}
+spec:
+  replicas: {{ $service.replicas }}
+  selector:
+    matchLabels:
+      app: {{ $service.name }}
+  template:
+    metadata:
+      labels:
+        app: {{ $service.name }}
+        service: {{ $serviceName }}
+        version: {{ $service.image.tag | default $.Values.global.image.tag | quote }}
+    spec:
+      containers:
+      - name: {{ $service.name }}
+        image: {{ $.Values.global.image.registry }}/{{ $.Values.global.image.username }}/{{ $service.image.repository }}:{{ $service.image.tag | default $.Values.global.image.tag }}
+        imagePullPolicy: {{ $.Values.global.image.pullPolicy }}
+        ports:
+        - containerPort: {{ $service.port }}
+          name: http
+          protocol: TCP
+        {{- if or $service.configMap $service.secretRef }}
+        envFrom:
+        {{- if $service.configMap }}
+        - configMapRef:
+            name: {{ $service.name }}-config
+        {{- end }}
+        {{- if $service.secretRef }}
+        - secretRef:
+            name: {{ $service.secretRef.name }}
+        {{- end }}
+        {{- end }}
+        resources:
+          {{- toYaml $.Values.global.resources | nindent 10 }}
+        livenessProbe:
+          httpGet:
+            path: /actuator/health/liveness
+            port: {{ $service.port }}
+          initialDelaySeconds: 60
+          periodSeconds: 10
+          timeoutSeconds: 5
+          failureThreshold: 3
+        readinessProbe:
+          httpGet:
+            path: /actuator/health/readiness
+            port: {{ $service.port }}
+          initialDelaySeconds: 30
+          periodSeconds: 5
+          timeoutSeconds: 3
+          failureThreshold: 3
+{{- end }}
+{{- end }}

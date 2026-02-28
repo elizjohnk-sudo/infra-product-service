@@ -1,0 +1,18 @@
+{{- range $serviceName, $service := .Values.services }}
+{{- if and $service.enabled $service.configMap }}
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ $service.name }}-config
+  namespace: {{ $.Values.namespace }}
+  labels:
+    app: {{ $service.name }}
+    chart: {{ $.Chart.Name }}-{{ $.Chart.Version }}
+    service: {{ $serviceName }}
+data:
+  {{- range $key, $value := $service.configMap }}
+  {{ $key }}: {{ $value | quote }}
+  {{- end }}
+{{- end }}
+{{- end }}

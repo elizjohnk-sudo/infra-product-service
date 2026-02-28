@@ -1,0 +1,33 @@
+# Production environment overrides
+namespace: product-services-prod
+
+global:
+  image:
+    pullPolicy: IfNotPresent
+    tag: v1.0.0  # Use specific versions in production
+
+  resources:
+    requests:
+      memory: "512Mi"
+      cpu: "500m"
+    limits:
+      memory: "1Gi"
+      cpu: "1000m"
+
+services:
+  inventory:
+    replicas: 3  # Scale up for high availability
+    configMap:
+      SPRING_JPA_SHOW_SQL: "false"  # Disable SQL logging in prod
+      SPRING_JPA_HIBERNATE_DDL_AUTO: validate  # Don't auto-update schema in prod
+
+  product:
+    replicas: 3
+
+  order:
+    replicas: 3
+
+  apiGateway:
+    replicas: 2
+    service:
+      type: LoadBalancer  # Use LoadBalancer in production
